@@ -31,5 +31,4 @@ public class Controller {
         return dbRepository.getPersonByNameAndSurname(name, surname);
     }
 
-
 }
