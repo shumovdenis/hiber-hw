@@ -12,7 +12,6 @@ import java.util.List;
 public class Controller {
     final DBRepository dbRepository;
 
-
     public Controller(DBRepository dbRepository) {
         this.dbRepository = dbRepository;
     }
@@ -21,4 +20,16 @@ public class Controller {
     public List<Person> getCity(@RequestParam("city") String city) {
         return dbRepository.getPersonByCity(city);
     }
+
+    @GetMapping("/persons/by-age")
+    public List<Person> getCity(@RequestParam("age") int age) {
+        return dbRepository.getPersonByAgeAndSort(age);
+    }
+
+    @GetMapping("/persons/by-name")
+    public Person getCity(@RequestParam("name") String name,@RequestParam("surname") String surname) {
+        return dbRepository.getPersonByNameAndSurname(name, surname);
+    }
+
+
 }

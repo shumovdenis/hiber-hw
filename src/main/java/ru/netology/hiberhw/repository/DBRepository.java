@@ -1,37 +1,39 @@
 package ru.netology.hiberhw.repository;
 
-import org.springframework.core.io.ClassPathResource;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import ru.netology.hiberhw.entity.Person;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import javax.persistence.EntityNotFoundException;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
+
 
 @Repository
 public class DBRepository {
-    @PersistenceContext
-    EntityManager entityManager;
+
+    @Autowired
+    PersonRepository personRepository;
 
     public List<Person> getPersonByCity (String city) {
-        Query query = entityManager.createQuery(read("myScript.sql"), Person.class);
-        query.setParameter("city", city);
-        List<Person> resultList = query.getResultList();
+        List<Person> resultList = new ArrayList<>(personRepository.findByCityOfLiving(city));
         return resultList;
     }
 
-    private static String read(String scriptFileName) {
-        try (InputStream is = new ClassPathResource(scriptFileName).getInputStream();
-             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(is))) {
-            return bufferedReader.lines().collect(Collectors.joining("\n"));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    public List<Person> getPersonByAgeAndSort (int age) {
+        List<Person> resultList = new ArrayList<>(personRepository.findByAgeLessThanEqualOrderByAge(age));
+        return resultList;
     }
+
+    public Person getPersonByNameAndSurname (String name, String surname) {
+        List<Person> resultList = new ArrayList<>();
+        Person person = personRepository.findByNameAndSurname(name, surname)
+                .orElseThrow(() -> new EntityNotFoundException("пользователя с таким именем и фамилией н есуществует "
+                        + name + " " + surname));
+        return person;
+    }
+
+
+
 }
